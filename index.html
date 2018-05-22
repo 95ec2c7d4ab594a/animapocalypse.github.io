@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<style>
+
+	  @import url("https://fonts.googleapis.com/css?family=Ubuntu");
+
+      * {
+        font-family: "Ubuntu", cursive;
+      }
+      body {
+      	background-color: #B4B4B4;
+      }
+
+	#pause, #resume, #restart {
+
+	  margin-left: 10px;
+		margin-right: 0px;
+	  background-color: #FF0036;
+		border-color: #FF0036;
+		color: white;
+    padding: 15px 32px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    cursor: pointer;
+    width: 150px;
+    display: block;
+
+
+}
+
+#pause:hover, #resume:hover, #restart:hover {
+
+	background-color: #9676CD;
+	border-radius: 2px
+
+}
+
+#pause:active, #resume:active, #restart:active {
+  background-color: #00FFFB;
+  transform: translateY(4px);
+}
+
+.para {
+	width: 100px;
+	text-align: center;
+	margin-right: 100px;
+	margin-left: auto;
+	background-color: #AEFFF8
+
+}
+
+
+
+</style>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Phaser Game</title>
+</head>
+<body>
+
+
+  <script src="phaser.js"></script>
+  <script src="main.js"></script>
+
+	<div class="para">
+		<p id="para">Controls: <br><br>Left Arrow: moves left <br><br>Right Arror: moves right <br><br>Up Arrow: Jumps <br><br>SpaceBar: shoots gun <br><br>Down Arrow: Cures dog<br>When Collected.</p>
+	</div>
+
+</body>
+</html>
