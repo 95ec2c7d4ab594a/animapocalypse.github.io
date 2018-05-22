@@ -1,3 +1,3 @@
 # Animapocalypse
 
-My game for BC Digital Media course.
+My game files made for NC digital media 2018
