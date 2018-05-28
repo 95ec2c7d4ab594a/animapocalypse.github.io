@@ -15,6 +15,10 @@ var fireButton;
 //enemy:
 var enemies;
 
+//cure:
+var cure;
+
+
 //hexcolour:
 var rand = (Math.random()*0xFFFFFF<<0).toString(16);
 
@@ -90,7 +94,7 @@ var mainState = {
     // game.load.image('player', 'assets/protagonist.png');
     game.load.image('bullet', 'assets/bullet.png');
     game.load.image('enemy', 'assets/zombie.png');
-    game.load.image('dog', 'assets/dog.png');
+    game.load.spritesheet('dog', 'assets/dogSheet.png', 192, 144 , 2);
     game.load.image('test', 'assets/floor.png');
     game.load.image('bounds', 'assets/bounds.png');
     game.load.image('cure', 'assets/cure.png');
@@ -117,18 +121,15 @@ var mainState = {
 
 
       //dog
-      dog = game.add.physicsGroup();
-      dog.create(0, 530, 'dog');
-      dog.setAll('body.immovable', true);
-
-      // dog = game.add.sprite(game.world.centerX - 400, game.world.centerY + 230, 'dog');
-      // game.physics.enable(dog,Phaser.Physics.ARCADE);
-
-
-      cure = game.add.sprite(game.world.centerX + 350, game.world.centerY + 250, 'cure');
-      game.physics.enable(cure,Phaser.Physics.ARCADE);
-      cure.visible = false;
-
+      dog = game.add.sprite(game.world.centerX - 410, game.world.centerY + 190, 'dog');
+      dog.scale.setTo(0.8);
+      dog.animations.add('original', [1], true);
+      dog.animations.add('second', [0], true);
+      dog.animations.play('original');
+      dog.anchor.x -= 0.1;
+      dog.anchor.y -= 0.0;
+      game.physics.enable(dog,Phaser.Physics.ARCADE);
+      dog.body.immovable = true;
 
       //platforms
       platforms = game.add.physicsGroup();
@@ -136,7 +137,7 @@ var mainState = {
       platforms.setAll('body.immovable', true);
 
       bounds = game.add.physicsGroup();
-      bounds.create(795, 120, 'bounds');
+      bounds.create(795, 120, 'bounds');  
       bounds.setAll('body.immovable', true);
 
       //collision world borders
@@ -144,8 +145,6 @@ var mainState = {
 
       //makes arrow keys usable
       cursors = game.input.keyboard.createCursorKeys();
-
-
 
       //makes the bullets
       bullets = game.add.group();
@@ -159,8 +158,6 @@ var mainState = {
 
       //firebutton
       fireButton = game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
-
-
 
       //enemies
       enemies = game.add.group();
@@ -189,9 +186,7 @@ var mainState = {
         });
         gameText.visible = false
 
-
         //fps test
-
         game.time.advancedTiming = true;
 
   },
@@ -206,15 +201,11 @@ var mainState = {
     game.physics.arcade.collide(player, platforms);
 
 
-    //collider for bullet touching enemy
-    game.physics.arcade.overlap(bullets, enemies, collisionHandler, null, this);
-    game.physics.arcade.overlap(dog, enemies, lossHandler, null, this);
-    game.physics.arcade.overlap(bullets, bounds, spamProtector, null, this);
-
-
-    game.physics.arcade.overlap(player, cure, winHandler, null, this);
-
-
+    //colliders
+    game.physics.arcade.overlap(bullets, enemies, collisionHandler, null, this); //bullets
+    game.physics.arcade.overlap(dog, enemies, lossHandler, null, this); //dog death
+    game.physics.arcade.overlap(bullets, bounds, spamProtector, null, this); //bounds for bullets
+    game.physics.arcade.overlap(player, cure, winHandler, null, this); //cure collector
 
     background.tilePosition.x -= 2;
 
@@ -223,7 +214,6 @@ var mainState = {
       player.body.x -= 7;
 
     }
-
 
     if(cursors.right.isDown) {
 
@@ -240,11 +230,11 @@ var mainState = {
     }
 
     if (cureAmount === 1 && game.physics.arcade.collide(player, dog)) {
-
       gameText.visible = true;
         if (cursors.down.isDown) {
-          dogCured = 1;
-          cureAmount = 0;
+            dogCured = 1;
+            cureAmount = 0;
+            dog.animations.play('second');
           if (dogCured === 1) {
             gameText.visible = false;
             cure.kill();
@@ -254,21 +244,18 @@ var mainState = {
       gameText.visible = false;
     }
 
-
     enemies.x -= 1;
 
     if (enemiesKilled.amount.length === 10) {
-      cure.visible = true;
+      spawnCure();
       enemiesKilled.amount = []
     }
-
 
     if (score === 1000 && dogCured === 1) {
       scoreText.visible = false;
       winText.visible = true;
       score === 1000
     }
-
 
     if (dogHealth === 0) {
       dog.kill()
@@ -300,7 +287,6 @@ var mainState = {
 
 function fireBullet()  {
 
-
   if (game.time.now > bulletTime) {
     bullet = bullets.getFirstExists(false);
 
@@ -313,6 +299,7 @@ function fireBullet()  {
 }
 
 function createEnemies() {
+
     for(var y = 0; y < 1; y++){
        for(var x = 0; x < 2; x++) {
         var enemy = enemies.create(x*75, y*55, 'enemy');
@@ -356,7 +343,10 @@ function winHandler(player, cure) {
   cureAmount += 1;
 }
 
-
+function spawnCure() {
+  cure = game.add.sprite(game.world.centerX + 350, game.world.centerY + 250, 'cure');
+  game.physics.enable(cure,Phaser.Physics.ARCADE);
+}
 
 game.state.add('mainState', mainState);
 
