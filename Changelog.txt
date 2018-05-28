@@ -1,0 +1,6 @@
+Version: 0.4.0
+Fixed cure pick up bug.
+Fixed dog pushed out of map bug.
+Added new sprites for dog.
+Added cure spawning.
+Added access from github via eldilzsterino.github.io/Animapocalypse.
