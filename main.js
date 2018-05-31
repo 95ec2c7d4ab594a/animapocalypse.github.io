@@ -18,7 +18,6 @@ var enemies;
 //cure:
 var cure;
 
-
 //hexcolour:
 var rand = (Math.random()*0xFFFFFF<<0).toString(16);
 
@@ -81,8 +80,45 @@ restart.addEventListener('click', () => {
 });
 document.body.appendChild(restart);
 
+//menu variables:
+var mBackground;
 
 
+//Menu:
+var menu = {
+
+   preload:function(){
+
+     game.load.image('mBackground', 'assets/mBackground.jpg');
+
+
+   },
+
+   create : function(){
+       game.physics.startSystem(Phaser.Physics.ARCADE);
+
+       game.scale.pageAlignHorizontally = true;
+       game.scale.pageAlignVertically = true;
+
+       mBackground = game.add.tileSprite(0,0,800,600,'mBackground')
+
+
+       var nameLabel = game.add.text(80,80,'Animapocalypse',{font: '50px Arial', fill:'#FFFFFF'});
+       var startLabel = game.add.text(400,game.world.height-80,'Press the "Space" key to start', {font: '25px Arial', fill:'#FFFFFF'});
+
+       var space = game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
+
+       space.onDown.addOnce(this.play,this);
+
+   },
+
+   play : function(){
+       game.state.start('mainState');
+   }
+};
+
+
+//Game:
 var mainState = {
 
 
@@ -137,7 +173,7 @@ var mainState = {
       platforms.setAll('body.immovable', true);
 
       bounds = game.add.physicsGroup();
-      bounds.create(795, 120, 'bounds');  
+      bounds.create(795, 120, 'bounds');
       bounds.setAll('body.immovable', true);
 
       //collision world borders
@@ -348,6 +384,8 @@ function spawnCure() {
   game.physics.enable(cure,Phaser.Physics.ARCADE);
 }
 
-game.state.add('mainState', mainState);
 
-game.state.start('mainState');
+
+game.state.add('mainState', mainState);
+game.state.add('menu', menu);
+game.state.start('menu');
