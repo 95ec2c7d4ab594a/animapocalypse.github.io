@@ -5,6 +5,16 @@ My game files made for NC digital media 2018
 
 
 ## Changelog
+**Version 1.1.0**
+- Added a win screen.
+- Added a loss screen.
+- Added weapon sprite.
+- Faster zombie speed.
+- Added More zombies.
+
+
+
+
 **Version 1.0.0**
 - Added start screen.
 - Game released to itch.io: https://dillonellis.itch.io/animapocalypse.
