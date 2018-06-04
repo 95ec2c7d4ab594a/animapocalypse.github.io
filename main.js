@@ -50,6 +50,7 @@ var dogCured = 0;
 //fps:
 var fpsText;
 
+var gun;
 
 
 //pause button:
@@ -89,7 +90,7 @@ var menu = {
 
    preload:function(){
 
-     game.load.image('mBackground', 'assets/mBackground.jpg');
+     
 
 
    },
@@ -100,7 +101,7 @@ var menu = {
        game.scale.pageAlignHorizontally = true;
        game.scale.pageAlignVertically = true;
 
-       mBackground = game.add.tileSprite(0,0,800,600,'mBackground')
+       game.stage.backgroundColor = "#4488AA";
 
 
        var nameLabel = game.add.text(80,80,'Animapocalypse',{font: '50px Arial', fill:'#FFFFFF'});
@@ -114,6 +115,63 @@ var menu = {
 
    play : function(){
        game.state.start('mainState');
+   }
+};
+
+var winState = {
+
+   preload:function(){
+
+
+
+
+   },
+
+   create : function(){
+       game.physics.startSystem(Phaser.Physics.ARCADE);
+
+       game.scale.pageAlignHorizontally = true;
+       game.scale.pageAlignVertically = true;
+
+       game.stage.backgroundColor = "#4488AA";
+
+
+       var nameLabel = game.add.text(80,80,'You Win',{font: '50px Arial', fill:'#FFFFFF'});
+       var startLabel = game.add.text(400,game.world.height-80,'Press Restart to play again!', {font: '25px Arial', fill:'#FFFFFF'});
+
+   }
+};
+
+var lossState = {
+
+   preload:function(){
+
+
+
+
+   },
+
+   create : function(){
+       game.physics.startSystem(Phaser.Physics.ARCADE);
+
+       game.scale.pageAlignHorizontally = true;
+       game.scale.pageAlignVertically = true;
+
+       game.stage.backgroundColor = "#4488AA";
+
+
+       var nameLabel = game.add.text(80,80,'You lost',{font: '50px Arial', fill:'#FFFFFF'});
+       var startLabel = game.add.text(400,game.world.height-80,'Press \"R\" to restart', {font: '25px Arial', fill:'#FFFFFF'});
+
+       var r = game.input.keyboard.addKey(Phaser.Keyboard.R);
+       r.onDown.addOnce(this.play, this);
+
+   },
+
+   play : function() {
+
+    window.location.reload();
+   
    }
 };
 
@@ -135,6 +193,7 @@ var mainState = {
     game.load.image('bounds', 'assets/bounds.png');
     game.load.image('cure', 'assets/cure.png');
     game.load.spritesheet('player', 'assets/protagonistSheet.png', 192, 192, 6);
+    game.load.image('gun', 'assets/gun.png');
 
   },
 
@@ -155,6 +214,9 @@ var mainState = {
       player.animations.play('walk', 12, true);
       game.physics.enable(player,Phaser.Physics.ARCADE);
 
+      gun = game.add.sprite(player.body.x += 1, player.body.x += 1, 'gun');
+      gun.scale.setTo(0.2);
+      game.physics.enable(gun,Phaser.Physics.ARCADE);
 
       //dog
       dog = game.add.sprite(game.world.centerX - 410, game.world.centerY + 190, 'dog');
@@ -237,6 +299,10 @@ var mainState = {
     game.physics.arcade.collide(player, platforms);
 
 
+    //gun movement
+    gun.body.x = (player.body.x + 130);
+    gun.body.y = (player.body.y + 80);
+
     //colliders
     game.physics.arcade.overlap(bullets, enemies, collisionHandler, null, this); //bullets
     game.physics.arcade.overlap(dog, enemies, lossHandler, null, this); //dog death
@@ -271,6 +337,7 @@ var mainState = {
             dogCured = 1;
             cureAmount = 0;
             dog.animations.play('second');
+            game.state.start("winState");
           if (dogCured === 1) {
             gameText.visible = false;
             cure.kill();
@@ -280,27 +347,26 @@ var mainState = {
       gameText.visible = false;
     }
 
-    enemies.x -= 1;
+    enemies.x -= 2;
 
-    if (enemiesKilled.amount.length === 10) {
+    if (enemiesKilled.amount.length === 20) {
       spawnCure();
       enemiesKilled.amount = []
     }
 
-    if (score === 1000 && dogCured === 1) {
+    if (score === 2000 && dogCured === 1) {
       scoreText.visible = false;
       winText.visible = true;
-      score === 1000
+      score === 2000;
     }
 
     if (dogHealth === 0) {
       dog.kill()
-      game.paused = true;
-      alert('Failed, The Dog Died!');
+      game.state.start("lossState");
     }
 
     if (enemies.countLiving() === 0) {
-      if (score < 1000) {
+      if (score < 2000) {
         createEnemies();
       } else {
         enemies.kill();
@@ -327,7 +393,7 @@ function fireBullet()  {
     bullet = bullets.getFirstExists(false);
 
     if (bullet) {
-      bullet.reset(player.x + 150, player.y +100);
+      bullet.reset(player.x + 160, player.y +100);
       bullet.body.velocity.x += 400;
       bulletTime = game.time.now + 200;
     }
@@ -337,7 +403,7 @@ function fireBullet()  {
 function createEnemies() {
 
     for(var y = 0; y < 1; y++){
-       for(var x = 0; x < 2; x++) {
+       for(var x = 0; x < 4; x++) {
         var enemy = enemies.create(x*75, y*55, 'enemy');
         enemy.anchor.setTo(-4, -2);
       }
@@ -358,7 +424,7 @@ function collisionHandler(bullet, enemy) {
 
   scoreText.setText('Score: ' + score);
 
-};
+}
 
 function lossHandler(dog, enemy) {
 
@@ -387,5 +453,7 @@ function spawnCure() {
 
 
 game.state.add('mainState', mainState);
+game.state.add('winState', winState);
+game.state.add('lossState', lossState);
 game.state.add('menu', menu);
 game.state.start('menu');
